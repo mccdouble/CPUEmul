@@ -100,66 +100,61 @@ bool memIsMoreCycleWorkNeeded(){
 
 //sets proper variables to fetch from memory
 void beginMemFetch(Memory* memory, unsigned int address, unsigned int count, unsigned int* answer, bool* waitState){
-		fetching = true; //tells memDoCycleWork what work its supposed to be doing
+	fetching = true; //tells memDoCycleWork what work its supposed to be doing
         memAddress = address;
-		dataCount = count;
+	dataCount = count;
         savedAnswer = answer; //pointer to where the retreived answer is to go
         *waitState = false;
         fetchOrSetDone = waitState; 
- 		memCount = 0;
+ 	memCount = 0;
 }
  
 //sets proper variables to set memory
 void beginMemSet(Memory* memory, unsigned int address, unsigned int count, unsigned int value, bool* waitState){
-		setting = true;
-		storeVal = value; //value needed to store
-		memAddress = address;
-		dataCount = count;
-		*waitState = false;
-		fetchOrSetDone = waitState; //local pointer to cpu wait state
-		memCount = 0;
+	setting = true;
+	storeVal = value; //value needed to store
+	memAddress = address;
+	dataCount = count;
+	*waitState = false;
+	fetchOrSetDone = waitState; //local pointer to cpu wait state
+	memCount = 0;
 }
 
 
 void memCreate(Memory* memory, unsigned int size){
 	memory->size = size;
-    memory->ptr = (unsigned int*) malloc(sizeof(unsigned int)*size);
-	
+	memory->ptr = (unsigned int*) malloc(sizeof(unsigned int)*size);
 }
 
 void memReset(Memory* memory){	
 	unsigned int i;
 	for (i = 0; i < memory->size; i++) { 
-        memory->ptr[i] = 0;
-    }
-	
+		memory->ptr[i] = 0;
+	}
 }
 
 
 void memDump(Memory* memory, unsigned int hexaddress, unsigned int hexcount){
-        //dump and format all of the allocated memory
-		printf("Addr 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
-		
-		unsigned int i;
-		
-		for(i = 0; i < hexaddress + hexcount; i++){
-			if(i % 16 == 0){
-			   printf("0x%02X ", i);
-			}
-			
-			if(i < hexaddress){
-			  printf("   ");
-			}
-			
-			else
-			if((i + 1) % 16 == 0){
-				printf("%02X\n", memory->ptr[i]);
-			}
-			else{
-				printf("%02X ", memory->ptr[i]);
-			}
+	//dump and format all of the allocated memory
+	printf("Addr 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
+
+	unsigned int i;
+	for(i = 0; i < hexaddress + hexcount; i++){
+		if(i % 16 == 0){
+		   printf("0x%02X ", i);
 		}
-		
+		if(i < hexaddress){
+		  printf("   ");
+		}
+		else
+		if((i + 1) % 16 == 0){
+			printf("%02X\n", memory->ptr[i]);
+		}
+		else{
+			printf("%02X ", memory->ptr[i]);
+		}
+	}
+
 	printf("\n");
 }
 
@@ -167,8 +162,8 @@ void memDump(Memory* memory, unsigned int hexaddress, unsigned int hexcount){
 void memSet(Memory* memory, unsigned int hexaddress, unsigned int hexcount, unsigned int values[]){
 	unsigned int i;
 	for (i = hexaddress; i < (hexaddress + hexcount); i++) { 
-          memory->ptr[i] = values[i-hexaddress]; 
-    } 
+		memory->ptr[i] = values[i-hexaddress]; 
+   	} 
 		
 }
 

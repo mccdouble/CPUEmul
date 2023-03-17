@@ -31,18 +31,12 @@ void setCacheOn(Cache* cache){
 
 void setCacheOff(Cache* cache){
 	cacheOn = false;
-	
 }
 
 
 void cacheDump(Cache* cache){
 	printf("cache dump\n");
-	
-	
 }
-
-//the cpu only ever asks for 1 byte in the unsigned country
-//also assuming due to parralizaition that cache can grab all 8 bytes in 5 ticks
 
 
 //takes lw command if cache is on do cache stuff
@@ -97,11 +91,11 @@ void tryCacheSW(Memory* memory, Cache* cache, unsigned int address, unsigned cou
 				}
 			}
 			else{
-			 if(!cache->validData){
-				 cache->data[address - requestedCLO] = answerVal;
-				 cache->flags[address - requestedCLO] = 'W';
-			 }
-	     } 
+				if(!cache->validData){
+				cache->data[address - requestedCLO] = answerVal;
+				cache->flags[address - requestedCLO] = 'W';
+			}
+	     	 	} 
 		 }
 	}
 	

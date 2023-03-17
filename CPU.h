@@ -9,7 +9,6 @@
 typedef struct
 {
  unsigned int RA, RB, RC, RD, RE, RF, RG, RH, PC, TC;
-
 }CPU;
 
 void cpuReset(CPU* cpu);

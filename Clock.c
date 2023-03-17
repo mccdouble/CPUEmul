@@ -12,20 +12,16 @@ void tick(Clock* clock, Memory* memory, CPU* cpu, IMemory* imemory, Cache* cache
 	for(i = 0; i < ticks; i++){
 		clock->count = clock->count + 1;
 		bool workToDo = true;
-		
+
 		memStartTick();
 		cpuStartTick(cpu);
-		while(workToDo)
-		{
-            memDoCycleWork(cpu, memory);
+		while(workToDo){
+            		memDoCycleWork(cpu, memory);
 			cpuDoCycleWork(cpu, memory, imemory, cache);
 			workToDo = cpuIsMoreCycleWorkNeeded() ||
-					   memIsMoreCycleWorkNeeded();
-					   
+					   memIsMoreCycleWorkNeeded();	   
 		}
-	 
 	}
-
 }
 
 

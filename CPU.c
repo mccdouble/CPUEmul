@@ -24,8 +24,7 @@ int instCount = 0;
 
 
 void cpuStartTick(){
-	cpuTickStarted = true;
-	
+	cpuTickStarted = true;	
 }
 
 //different commands for cpu
@@ -43,138 +42,141 @@ void cpuDoCycleWork(CPU* cpu, Memory* memory, IMemory* imemory, Cache* cache){
 		
 			
 	//fetch instruction from imem pointed to by PC
-		if(workState && instWorkState){ //cpu not waiting for memory 
-	       command = imemory->ptr[cpu->PC];
-           inst = command >> 17;
-	       dest = command >> 14 & 7;
-	       src  = command >> 11 & 7;
-	       tgt  = command >> 8 & 7; 
-		   immVal = command & 255;
-           
-		   printf("inst: %x\n", imemory->ptr[cpu->PC]);
-							 
-	    	//add instruction	 
-			if(inst == 0){ 
-				destination = regAddress(cpu, dest);
-				source = regAddress(cpu, src);
-				sourceVal = *source;
-				tgtVal = *target;
-				*destination = sourceVal + tgtVal;
-				cpu->PC = cpu->PC + 1;
-			}
-			//addi instruction
-			else
-			if(inst == 1){	 
-				destination = regAddress(cpu, dest); //address of destination reg
-				source = regAddress(cpu, src);
-				sourceVal = *source;
-				*destination = immVal + sourceVal;
-				 cpu->PC = cpu->PC + 1;
-			}	
-			//takes 2 cycles
-			//mul instruction
-			else
-			if(inst == 2){
-				destination = regAddress(cpu, dest);
-				source = regAddress(cpu, src);
-				unsigned char lsb = *source & 15;
-				unsigned char msb = *source >> 4 & 15;
-				*destination = lsb * msb;
-				cpu->PC = cpu->PC + 1;
-				instCount = 1;
-				
-			}
-			//inv instruction
-			else 
-			if(inst == 3){
-				destination = regAddress(cpu, dest);
-				source = regAddress(cpu, src);
-				sourceVal = *source;
-				*destination = ~sourceVal & 255;
-				cpu->PC = cpu->PC + 1;
+	if(workState && instWorkState){ //cpu not waiting for memory 
+		command = imemory->ptr[cpu->PC];
+		inst = command >> 17;
+		dest = command >> 14 & 7;
+		src  = command >> 11 & 7;
+		tgt  = command >> 8 & 7; 
+		immVal = command & 255;
+		printf("inst: %x\n", imemory->ptr[cpu->PC]);
+		 
+		//add instruction	 
+		if(inst == 0){ 
+			destination = regAddress(cpu, dest);
+			source = regAddress(cpu, src);
+			sourceVal = *source;
+			tgtVal = *target;
+			*destination = sourceVal + tgtVal;
+			cpu->PC = cpu->PC + 1;
+		}
 		
+		//addi instruction
+		else
+		if(inst == 1){	 
+			destination = regAddress(cpu, dest); //address of destination reg
+			source = regAddress(cpu, src);
+			sourceVal = *source;
+			*destination = immVal + sourceVal;
+			 cpu->PC = cpu->PC + 1;
+		}	
+	
+		//mul instruction
+		//takes 2 cycles
+		else
+		if(inst == 2){
+			destination = regAddress(cpu, dest);
+			source = regAddress(cpu, src);
+			unsigned char lsb = *source & 15;
+			unsigned char msb = *source >> 4 & 15;
+			*destination = lsb * msb;
+			cpu->PC = cpu->PC + 1;
+			instCount = 1;
+
+		}
+		
+		//inv instruction
+		else 
+		if(inst == 3){
+			destination = regAddress(cpu, dest);
+			source = regAddress(cpu, src);
+			sourceVal = *source;
+			*destination = ~sourceVal & 255;
+			cpu->PC = cpu->PC + 1;
+
+		}
+		
+		//beq instruction
+		else
+		if(inst == 4 && dest == 0){
+			source = regAddress(cpu, src);
+			target = regAddress(cpu, tgt);
+			sourceVal = *source;
+			tgtVal = *target;
+
+			if(sourceVal == tgtVal){
+			 cpu->PC = immVal;
+			 instCount = 1;
 			}
-			//beq instruction
-			else
-			if(inst == 4 && dest == 0){
-				source = regAddress(cpu, src);
-				target = regAddress(cpu, tgt);
-				sourceVal = *source;
-				tgtVal = *target;
-				
-				if(sourceVal == tgtVal){
-				 cpu->PC = immVal;
-				 instCount = 1;
-				}
-				else{
-				   cpu->PC = cpu->PC + 1;	
-				} 
-			
+			else{
+			   cpu->PC = cpu->PC + 1;	
+			} 
+
+		}
+		//bneq instruction
+		else
+		if(inst == 4 && dest == 1){
+			source = regAddress(cpu, src);
+			target = regAddress(cpu, tgt);
+			sourceVal = *source;
+			tgtVal = *target;
+
+			if(sourceVal != tgtVal){
+			 cpu->PC = immVal;
+			 instCount = 1;
 			}
-			//bneq instruction
-			else
-			if(inst == 4 && dest == 1){
-				source = regAddress(cpu, src);
-				target = regAddress(cpu, tgt);
-				sourceVal = *source;
-				tgtVal = *target;
-				
-				if(sourceVal != tgtVal){
-				 cpu->PC = immVal;
-				 instCount = 1;
-				}
-				else{
-				   cpu->PC = cpu->PC + 1;	
-				}
-			}
-			//blt instruction
-			else
-		    if(inst == 4 && dest == 2){
-				source = regAddress(cpu, src);
-				target = regAddress(cpu, tgt);
-				sourceVal = *source;
-				tgtVal = *target;
-				if(sourceVal < tgtVal){
-					cpu->PC = immVal;
-					instCount = 1;14
-				}
-				else{
-					cpu->PC = cpu->PC + 1;
-				}
-			}
-			//lw instruction
-			else
-            if(inst == 5){ 
-			  printf("address of cache[1] %d\n", &cache->data[1]);
-              destination = regAddress(cpu, dest);//getting address of source register
-			  printf("address of destination %d\n", destination);
-              target = regAddress(cpu, tgt);//getting address of target register
-			  tgt = *target;
-              tryCacheLW(memory, cache, tgt, 1, destination, &workState);
-			  cpu->PC = cpu->PC + 1;	
-			  
-            }
-			
-			//sw instruction
-            else  
-		    if(inst == 6){  
-			  source = regAddress(cpu, src);    //getting address of target destination
-			  target = regAddress(cpu, tgt);	 //getting value of target register
-			  tgt = *target;
-			  src = *source;
-              tryCacheSW(memory, cache, tgt, 1, src, &workState);
-			  cpu->PC = cpu->PC + 1;	
-            }	 
-		   
-		    //halt instruction
-			else 
-			if(inst == 7){
-				//increment pc
-				//ignore all future clock ticks
-				 cpu->PC = cpu->PC + 1;
-				 haltState = true;
+			else{
+			   cpu->PC = cpu->PC + 1;	
 			}
 		}
+		//blt instruction
+		else
+	    	if(inst == 4 && dest == 2){
+			source = regAddress(cpu, src);
+			target = regAddress(cpu, tgt);
+			sourceVal = *source;
+			tgtVal = *target;
+			if(sourceVal < tgtVal){
+				cpu->PC = immVal;
+				instCount = 1;14
+			}
+			else{
+				cpu->PC = cpu->PC + 1;
+			}
+		}
+		
+		//lw instruction
+		else
+		if(inst == 5){ 
+			printf("address of cache[1] %d\n", &cache->data[1]);
+			destination = regAddress(cpu, dest);//getting address of source register
+			printf("address of destination %d\n", destination);
+			target = regAddress(cpu, tgt);//getting address of target register
+			tgt = *target;
+			tryCacheLW(memory, cache, tgt, 1, destination, &workState);
+			cpu->PC = cpu->PC + 1;	
+		}
+			
+		//sw instruction
+           	else  
+		if(inst == 6){  
+			  source = regAddress(cpu, src);    //getting address of target destination
+			  target = regAddress(cpu, tgt);     //getting value of target register
+			  tgt = *target;
+			  src = *source;
+		      	  tryCacheSW(memory, cache, tgt, 1, src, &workState);
+			  cpu->PC = cpu->PC + 1;	
+            	}	 
+		   
+	    	//halt instruction
+		else 
+		if(inst == 7){
+			//increment pc
+			//ignore all future clock ticks
+			 cpu->PC = cpu->PC + 1;
+			 haltState = true;
+		}
+	}
     }
 }	
 
@@ -290,8 +292,6 @@ unsigned int* regAddress(CPU* cpu, unsigned int dest){
 	 }
 	 else
 		 return 0;
- 
-
 }
 
 

@@ -1,7 +1,3 @@
- /*Patrick McCommons
- *pgmccomm
- */
- 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,12 +14,12 @@ int main(int argc, char** argv){
      return 0;
   }
 
-  //device initalizaiton 
+  //parse token
   char token[7];
   char* fileName = argv[1];
   FILE* fp = fopen(fileName, "r");
   
-  
+  //device instantiations
   Clock clock;
   Memory memory;
   CPU cpu;
@@ -31,7 +27,7 @@ int main(int argc, char** argv){
   Cache cache;
    
   while(fscanf(fp, "%s", token) == 1){
-	//if specified device is clock//
+	//if specified device is clock
 	if(strcmp(token, "clock") == 0){
 		fscanf(fp, "%s", token);
 		//reset command
@@ -52,7 +48,7 @@ int main(int argc, char** argv){
 
 	}
 	
-	//if specified  device is cpu
+	//if specified device is cpu
 	else 
 	if(strcmp(token, "cpu") == 0){
 	fscanf(fp, "%s", token);
@@ -74,7 +70,7 @@ int main(int argc, char** argv){
 			}
 		}
 		
-	//cpuDump command
+		//cpuDump command
 		else
 		if(strcmp(token, "dump") == 0){
 		    cpuDump(&cpu);
@@ -83,54 +79,53 @@ int main(int argc, char** argv){
 	}
 
 	else
-    if(strcmp(token, "memory") == 0){
+	if(strcmp(token, "memory") == 0){
 		fscanf(fp, "%s", token);
-	  	//memCreate command
+		//memCreate command
 		if(strcmp(token, "create") == 0){
-		  unsigned int size;
-		  fscanf(fp, "%x", &size);
-		  memCreate(&memory, size);
-		}
+		unsigned int size;
+		fscanf(fp, "%x", &size);
+		memCreate(&memory, size);
+	}
 				
-		//mem set command 
-		else
-		if(strcmp(token, "set") == 0){
-		  unsigned int hexaddress;
-		  unsigned int hexcount;
-		  fscanf(fp, "%x", &hexaddress);
-		  fscanf(fp, "%x", &hexcount);
-		  unsigned int values[hexcount];
-		 		  
-		  unsigned int i;
-		  for(i = 0; i<hexcount; i++){
-			  fscanf(fp, "%x", &values[i]);
-		  }
-		
-		 memSet(&memory, hexaddress, hexcount, values);
-    
+	//mem set command 
+	else
+	if(strcmp(token, "set") == 0){
+		unsigned int hexaddress;
+		unsigned int hexcount;
+		fscanf(fp, "%x", &hexaddress);
+		fscanf(fp, "%x", &hexcount);
+		unsigned int values[hexcount];
+
+		unsigned int i;
+		for(i = 0; i<hexcount; i++){
+		  fscanf(fp, "%x", &values[i]);
 		}
-			
-		//memDump command
-		else
-		if(strcmp(token, "dump") == 0){
-		  unsigned int hexaddress;
-		  unsigned int hexcount;
-		  fscanf(fp, "%x", &hexaddress);		  
-		  fscanf(fp, "%x", &hexcount);
-		  memDump(&memory, hexaddress, hexcount);
-		}
+		//set memory to values specified at their respective locations
+		memSet(&memory, hexaddress, hexcount, values);
+	}
+
+	//memDump command
+	else
+	if(strcmp(token, "dump") == 0){
+		unsigned int hexaddress;
+		unsigned int hexcount;
+		fscanf(fp, "%x", &hexaddress);		  
+		fscanf(fp, "%x", &hexcount);
+		memDump(&memory, hexaddress, hexcount);
+	}
+
+	//memReset command
+	else
+	if(strcmp(token, "reset") == 0){
+		memReset(&memory);
+	}
 		
-		//memReset command
-		else
-		if(strcmp(token, "reset") == 0){
-			memReset(&memory);
-		}
-		
-  	}
+  }
 	
 	//imem commands
 	else
-    if(strcmp(token, "imemory") == 0){
+	if(strcmp(token, "imemory") == 0){
 		fscanf(fp, "%s", token);
 	  	//imemCreate command
 		if(strcmp(token, "create") == 0){
@@ -139,8 +134,7 @@ int main(int argc, char** argv){
 		  iMemCreate(&imemory, size);
 		}
 				
-		
-		//imem set command 
+			//imem set command 
 		else
 		if(strcmp(token, "set") == 0){
 		  unsigned int hexaddress;
@@ -198,14 +192,12 @@ int main(int argc, char** argv){
 	}
  }
 
-  
+ //free memory storage
  free(memory.ptr);
  free(imemory.ptr);
  fclose(fp);
  fp = NULL; 
  return 0;
-
-
 	
 }
 

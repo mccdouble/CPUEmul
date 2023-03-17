@@ -68,7 +68,7 @@ void tryCacheLW(Memory* memory, Cache* cache, unsigned int address, unsigned int
 void tryCacheSW(Memory* memory, Cache* cache, unsigned int address, unsigned count, unsigned int answerVal, bool *fetchDonePtr){
      if(cacheOn){
 		 if(address == 0xFF){
-			 for(int i = 0; i < 8; i++){
+			for(int i = 0; i < 8; i++){
 				if(cache->flags[i] == 'W'){
 					byteToWrite = true;
 				}
@@ -77,12 +77,12 @@ void tryCacheSW(Memory* memory, Cache* cache, unsigned int address, unsigned cou
 				beginMemSet(memory, address, 8, answerVal, fetchDonePtr);
 			}		 
 		 }
-		 
+		
 		 else{
-		 requestedCLO = address >> 3;
+		 	requestedCLO = address >> 3;
 			if(requestedCLO != cache->CLO){
 				for(int i = 0; i < 8; i++){
-						if(cache->flags[i] == 'W'){
+					if(cache->flags[i] == 'W'){
 						byteToWrite = true;
 					}
 				}
@@ -92,15 +92,15 @@ void tryCacheSW(Memory* memory, Cache* cache, unsigned int address, unsigned cou
 			}
 			else{
 				if(!cache->validData){
-				cache->data[address - requestedCLO] = answerVal;
-				cache->flags[address - requestedCLO] = 'W';
-			}
+					cache->data[address - requestedCLO] = answerVal;
+					cache->flags[address - requestedCLO] = 'W';
+				}
 	     	 	} 
 		 }
 	}
 	
     else{//cache is off, pass request on to memory
-		 beginMemSet(memory, address, count, answerVal, fetchDonePtr);
+	beginMemSet(memory, address, count, answerVal, fetchDonePtr);
 	}
 }
 	 
